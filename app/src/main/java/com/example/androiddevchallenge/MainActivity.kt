@@ -18,24 +18,35 @@ package com.example.androiddevchallenge
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.androiddevchallenge.model.MyTimer
+import com.example.androiddevchallenge.model.TimerViewModel
 import com.example.androiddevchallenge.ui.theme.MyTheme
-import com.example.androiddevchallenge.ui.theme.typography
 
 class MainActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val myTimer = MyTimer(2, 34, 7)
+        myTimer.start()
+
         setContent {
             MyTheme {
-                TimerScreen()
+                TimerScreen(TimerViewModel(myTimer))
             }
         }
     }
@@ -43,28 +54,40 @@ class MainActivity : AppCompatActivity() {
 
 // Start building your app here!
 @Composable
-fun TimerScreen() {
+fun TimerScreen(timerViewModel: TimerViewModel) {
+    val hours: String by timerViewModel.myTimer.hours.observeAsState("03")
+    val minutes: String by timerViewModel.myTimer.minutes.observeAsState("04")
+    val seconds: String by timerViewModel.myTimer.seconds.observeAsState("05")
+
     Surface(color = MaterialTheme.colors.background) {
         Column(
             modifier = Modifier.padding(30.dp)
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(80f)
-            ) {
-                Text(text = "01", textAlign = TextAlign.Center, modifier = Modifier.weight(1f))
-                Text(text = "22", textAlign = TextAlign.Center, modifier = Modifier.weight(1f))
-                Text(text = "59", textAlign = TextAlign.Center, modifier = Modifier.weight(1f))
-            }
+            TimerRow(hours, minutes, seconds)
         }
+    }
+}
+
+@Composable
+fun TimerRow(hours: String, minutes: String, seconds: String) {
+    Row(
+        modifier = Modifier.fillMaxWidth(80f)
+    ) {
+        Text(text = hours, textAlign = TextAlign.Center, modifier = Modifier.weight(1f))
+        Text(text = minutes, textAlign = TextAlign.Center, modifier = Modifier.weight(1f))
+        Text(text = seconds, textAlign = TextAlign.Center, modifier = Modifier.weight(1f))
     }
 }
 
 @Preview("Light Theme", widthDp = 360, heightDp = 640)
 @Composable
 fun LightPreview() {
+
+    val myTimer = MyTimer(1, 23, 45)
+    myTimer.start()
+
     MyTheme {
-        TimerScreen()
+        TimerScreen(TimerViewModel(myTimer))
     }
 }
 
