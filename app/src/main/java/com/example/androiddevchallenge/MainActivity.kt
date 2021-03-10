@@ -25,7 +25,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-// import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -99,7 +98,8 @@ fun NumberColumn(digit: Int, digitChanger: (Int) -> Unit, modifier: Modifier) {
 
     Column(modifier.fillMaxHeight(.5f)) {
         Text(
-            text = digit.toString(), textAlign = TextAlign.Center,
+            text = String.format("%02d", digit),
+            textAlign = TextAlign.Center,
             modifier = modifier
                 .fillMaxWidth(1f)
                 .padding(top = 5.dp)
@@ -121,46 +121,6 @@ fun NumberColumn(digit: Int, digitChanger: (Int) -> Unit, modifier: Modifier) {
                 .background(color = Color(0xFFaa0077), shape = CircleShape)
         ) {
             Text(text = "-", style = TextStyle(fontSize = 30.sp, color = Color.White), modifier = modifier, textAlign = TextAlign.Center)
-        }
-    }
-}
-
-@Composable
-fun ButtonRow() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth(80f)
-            .padding(
-                vertical = 20.dp
-            )
-    ) {
-        Text(text = " ", textAlign = TextAlign.Center)
-        TextButton(
-            onClick = { /*TODO*/ },
-            modifier = Modifier
-                .background(color = Color.DarkGray)
-                .weight(1f)
-        ) {
-            Text(
-                text = "+",
-                modifier = Modifier
-                    .background(color = Color.Green)
-                    .fillMaxWidth()
-            )
-        }
-        Text(text = " ", textAlign = TextAlign.Center)
-        TextButton(
-            onClick = { /*TODO*/ },
-            modifier = Modifier
-                .background(color = Color.DarkGray)
-                .weight(1f)
-        ) {
-            Text(
-                text = "+",
-                modifier = Modifier
-                    .background(color = Color.Green)
-                    .fillMaxWidth()
-            )
         }
     }
 }

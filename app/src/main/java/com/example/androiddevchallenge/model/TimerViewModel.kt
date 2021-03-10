@@ -22,14 +22,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class TimerViewModel() : ViewModel() {
-    fun changeHour(diff: Int) { mHours.value = mHours.value?.plus(diff) }
-    fun changeMinute(diff: Int) { mMinutes.value = mMinutes.value?.plus(diff) }
-    fun changeSeconds(diff: Int) { mSeconds.value = mSeconds.value?.plus(diff) }
+    fun changeHour(diff: Int) { if (mHours.value == 0 && diff < 0) return ; mHours.value = mHours.value?.plus(diff) }
+    fun changeMinute(diff: Int) { if (mMinutes.value == 0 && diff < 0) return ; mMinutes.value = mMinutes.value?.plus(diff) }
+    fun changeSeconds(diff: Int) { if (mSeconds.value == 0 && diff < 0) return ; mSeconds.value = mSeconds.value?.plus(diff) }
 
-    val mHours = MutableLiveData(5)
+    val mHours = MutableLiveData(0)
     var hours: LiveData<Int> = mHours
-    val mMinutes = MutableLiveData(4)
+    val mMinutes = MutableLiveData(0)
     var minutes: LiveData<Int> = mMinutes
-    val mSeconds = MutableLiveData(3)
+    val mSeconds = MutableLiveData(0)
     var seconds: LiveData<Int> = mSeconds
 }
