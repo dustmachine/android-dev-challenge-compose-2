@@ -34,8 +34,6 @@ import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -51,7 +49,7 @@ import com.example.androiddevchallenge.ui.theme.pinkish
 
 class MainActivity : AppCompatActivity() {
 
-    val timerViewModel by viewModels<TimerViewModel>()
+    private val timerViewModel by viewModels<TimerViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,25 +65,24 @@ class MainActivity : AppCompatActivity() {
 // Start building your app here!
 @Composable
 fun TimerScreen(timerViewModel: TimerViewModel) {
-    var isClickable by remember { mutableStateOf(true) }
+    val isRunning: Boolean by timerViewModel.isStarted.observeAsState(false)
+    val isNonZero: Boolean by timerViewModel.isNonZero.observeAsState(false)
 
     Surface(color = MaterialTheme.colors.background) {
         Column(
             modifier = Modifier.padding(30.dp)
         ) {
             TimerRow(timerViewModel)
-//            ButtonRow()
             TextButton(
                 onClick = {
                     timerViewModel.start()
-                    isClickable = false
                 },
-                enabled = isClickable,
+                enabled = !isRunning,
                 modifier = Modifier
                     .fillMaxWidth(1f)
                     .padding(20.dp)
                     .background(
-                        color = (if (isClickable) pinkish else grayish),
+                        color = (if (!isRunning) pinkish else grayish),
                         shape = RoundedCornerShape(5.dp)
                     )
             ) {
@@ -102,33 +99,35 @@ fun TimerScreen(timerViewModel: TimerViewModel) {
 @Composable
 fun TimerRow(timerViewModel: TimerViewModel) {
     //  do we need to remember?  var hours: Int by rememberSaveable { mutableStateOf(7) }
-    val hours: Int by timerViewModel.hours.observeAsState(9)
-    val minutes: Int by timerViewModel.minutes.observeAsState(9)
-    val seconds: Int by timerViewModel.seconds.observeAsState(9)
+    val hours: Int by timerViewModel.hours.observeAsState(0)
+    val minutes: Int by timerViewModel.minutes.observeAsState(0)
+    val seconds: Int by timerViewModel.seconds.observeAsState(0)
 
     Row(
         modifier = Modifier.fillMaxWidth(1f)
     ) {
         NumberColumn(
             digit = hours,
-            digitChanger = { timerViewModel.changeHour(it) },
-            Modifier.weight(1f)
+            digitChanger = { timerViewModel.changeHour(it) }, timerViewModel,
+            modifier = Modifier.weight(1f)
         )
         NumberColumn(
             digit = minutes,
-            digitChanger = { timerViewModel.changeMinute(it) },
-            Modifier.weight(1f)
+            digitChanger = { timerViewModel.changeMinute(it) }, timerViewModel,
+            modifier = Modifier.weight(1f)
         )
         NumberColumn(
             digit = seconds,
-            digitChanger = { timerViewModel.changeSeconds(it) },
-            Modifier.weight(1f)
+            digitChanger = { timerViewModel.changeSeconds(it) }, timerViewModel,
+            modifier = Modifier.weight(1f)
         )
     }
 }
 
 @Composable
-fun NumberColumn(digit: Int, digitChanger: (Int) -> Unit, modifier: Modifier) {
+fun NumberColumn(digit: Int, digitChanger: (Int) -> Unit, timerViewModel: TimerViewModel, modifier: Modifier) {
+
+    val isRunning: Boolean by timerViewModel.isStarted.observeAsState(false)
 
     Column(modifier.fillMaxHeight(.5f)) {
         Text(
@@ -139,11 +138,12 @@ fun NumberColumn(digit: Int, digitChanger: (Int) -> Unit, modifier: Modifier) {
                 .padding(top = 5.dp)
         )
         TextButton(
+            enabled = digit < 59 && !isRunning,
             onClick = { digitChanger(1) },
             modifier = modifier
                 .fillMaxWidth(1f)
                 .padding(20.dp)
-                .background(color = pinkish, shape = CircleShape)
+                .background(color = (if (digit < 59 && !isRunning) pinkish else grayish), shape = CircleShape)
         ) {
             Text(
                 text = "+",
@@ -153,12 +153,12 @@ fun NumberColumn(digit: Int, digitChanger: (Int) -> Unit, modifier: Modifier) {
             )
         }
         TextButton(
-            enabled = digit > 0,
+            enabled = digit > 0 && !isRunning,
             onClick = { digitChanger(-1) },
             modifier = modifier
                 .fillMaxWidth(1f)
                 .padding(20.dp)
-                .background(color = pinkish, shape = CircleShape)
+                .background(color = (if (digit > 0 && !isRunning) pinkish else grayish), shape = CircleShape)
         ) {
             Text(
                 text = "-",

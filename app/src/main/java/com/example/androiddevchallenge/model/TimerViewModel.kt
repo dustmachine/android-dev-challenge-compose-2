@@ -22,38 +22,49 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class TimerViewModel() : ViewModel() {
-    var isAlreadyRunning: Boolean = false
-    val mHours = MutableLiveData(0)
-    var hours: LiveData<Int> = mHours
-    val mMinutes = MutableLiveData(0)
-    var minutes: LiveData<Int> = mMinutes
-    val mSeconds = MutableLiveData(0)
-    var seconds: LiveData<Int> = mSeconds
+    val _started = MutableLiveData(false)
+    var isStarted: LiveData<Boolean> = _started
+
+    val _hours = MutableLiveData(0)
+    var hours: LiveData<Int> = _hours
+    val _minutes = MutableLiveData(0)
+    var minutes: LiveData<Int> = _minutes
+    val _seconds = MutableLiveData(0)
+    var seconds: LiveData<Int> = _seconds
+
+    val _isNonZero = MutableLiveData(false)
+    var isNonZero: LiveData<Boolean> = _isNonZero
+
+    fun updateNonZero() { _isNonZero.value = ((_seconds.value!! + _minutes.value!! + _hours.value!!) > 0) }
 
     fun changeHour(diff: Int) {
-        if (mHours.value == 0 && diff < 0) return; mHours.value = mHours.value?.plus(diff)
+        if (_hours.value == 0 && diff < 0) return; _hours.value = _hours.value?.plus(diff)
+        updateNonZero()
     }
 
     fun changeMinute(diff: Int) {
-        if (mMinutes.value == 0 && diff < 0) return; mMinutes.value = mMinutes.value?.plus(diff)
+        if (_minutes.value == 0 && diff < 0) return; _minutes.value = _minutes.value?.plus(diff)
+        updateNonZero()
     }
 
     fun changeSeconds(diff: Int) {
-        if (mSeconds.value == 0 && diff < 0) return; mSeconds.value = mSeconds.value?.plus(diff)
+        if (_seconds.value == 0 && diff < 0) return; _seconds.value = _seconds.value?.plus(diff)
+        updateNonZero()
     }
 
     fun start() {
-        if (this.isAlreadyRunning) return
-        val howManyMillis = ((mSeconds.value!! + (mMinutes.value!! * 60) + (mHours.value!! * 60 * 60)) * 1000).toLong()
+        if (_started.value!!) return
+        _started.value = true
+        val howManyMillis = ((_seconds.value!! + (_minutes.value!! * 60) + (_hours.value!! * 60 * 60)) * 1000).toLong()
         val timer = object : CountDownTimer(howManyMillis, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 val secondsLeft = millisUntilFinished / 1000
                 val h = (secondsLeft / 60 / 60)
                 val m = (secondsLeft - (h * 60 * 60)) / 60
                 val s = (secondsLeft - (h * 60 * 60) - (m * 60))
-                mHours.value = h.toInt()
-                mMinutes.value = m.toInt()
-                mSeconds.value = s.toInt()
+                _hours.value = h.toInt()
+                _minutes.value = m.toInt()
+                _seconds.value = s.toInt()
                 Log.i(
                     "myTimer",
                     String.format("seconds remaining: %s...   H:%s M:%s S:%s", secondsLeft, h, m, s)
@@ -62,9 +73,9 @@ class TimerViewModel() : ViewModel() {
 
             override fun onFinish() {
                 Log.i("myTimer", "Finished")
+                _started.value = false
             }
         }
         timer.start()
-        isAlreadyRunning = true
     }
 }
