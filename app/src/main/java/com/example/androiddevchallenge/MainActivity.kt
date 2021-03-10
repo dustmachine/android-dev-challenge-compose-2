@@ -17,9 +17,15 @@ package com.example.androiddevchallenge
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+// import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -35,12 +41,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.LiveData
 import com.example.androiddevchallenge.model.MyTimer
 import com.example.androiddevchallenge.model.TimerViewModel
 import com.example.androiddevchallenge.ui.theme.MyTheme
 
 class MainActivity : AppCompatActivity() {
+
+    val timerViewModel by viewModels<TimerViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,7 +57,7 @@ class MainActivity : AppCompatActivity() {
 
         setContent {
             MyTheme {
-                TimerScreen(TimerViewModel(myTimer))
+                TimerScreen(timerViewModel)
             }
         }
     }
@@ -71,32 +78,49 @@ fun TimerScreen(timerViewModel: TimerViewModel) {
 
 @Composable
 fun TimerRow(timerViewModel: TimerViewModel) {
+//    var hours: Int by rememberSaveable { mutableStateOf(7) }
+//    var minutes: Int by rememberSaveable { mutableStateOf(8) }
+//    var seconds: Int by rememberSaveable { mutableStateOf(9) }
+    val hours: Int by timerViewModel.hours.observeAsState(9)
+    val minutes: Int by timerViewModel.minutes.observeAsState(9)
+    val seconds: Int by timerViewModel.seconds.observeAsState(9)
 
     Row(
         modifier = Modifier.fillMaxWidth(1f)
     ) {
-        NumberColumn(timerViewModel, timerViewModel.myTimer.hours, Modifier.weight(1f))
-        NumberColumn(timerViewModel, timerViewModel.myTimer.minutes, Modifier.weight(1f))
-        NumberColumn(timerViewModel, timerViewModel.myTimer.seconds, Modifier.weight(1f))
+        NumberColumn(digit = hours, digitChanger = { timerViewModel.changeHour(it) }, Modifier.weight(1f))
+        NumberColumn(digit = minutes, digitChanger = { timerViewModel.changeMinute(it) }, Modifier.weight(1f))
+        NumberColumn(digit = seconds, digitChanger = { timerViewModel.changeSeconds(it) }, Modifier.weight(1f))
     }
 }
 
 @Composable
-fun NumberColumn(timerViewModel: TimerViewModel, digit: LiveData<String>, modifier: Modifier) {
-    val num: String by digit.observeAsState("03")
+fun NumberColumn(digit: Int, digitChanger: (Int) -> Unit, modifier: Modifier) {
+
     Column(modifier.fillMaxHeight(.5f)) {
-        Text(text = num, textAlign = TextAlign.Center, modifier = modifier.fillMaxWidth(1f).padding(top = 5.dp))
+        Text(
+            text = digit.toString(), textAlign = TextAlign.Center,
+            modifier = modifier
+                .fillMaxWidth(1f)
+                .padding(top = 5.dp)
+        )
         TextButton(
-            onClick = { timerViewModel.myTimer._minutes += 1  },
-            modifier = modifier.fillMaxWidth(1f).padding(20.dp).background(color = Color(0xFFaa0077), shape = CircleShape)
+            onClick = { digitChanger(1) },
+            modifier = modifier
+                .fillMaxWidth(1f)
+                .padding(20.dp)
+                .background(color = Color(0xFFaa0077), shape = CircleShape)
         ) {
-            Text(text="+", style = TextStyle(fontSize = 30.sp, color = Color.White), modifier = modifier, textAlign = TextAlign.Center)
+            Text(text = "+", style = TextStyle(fontSize = 30.sp, color = Color.White), modifier = modifier, textAlign = TextAlign.Center)
         }
         TextButton(
-            onClick = { timerViewModel.myTimer._minutes -= 1 },
-            modifier = modifier.fillMaxWidth(1f).padding(20.dp).background(color = Color(0xFFaa0077), shape = CircleShape)
+            onClick = { digitChanger(-1) },
+            modifier = modifier
+                .fillMaxWidth(1f)
+                .padding(20.dp)
+                .background(color = Color(0xFFaa0077), shape = CircleShape)
         ) {
-            Text(text="-", style = TextStyle(fontSize = 30.sp, color = Color.White),  modifier = modifier, textAlign = TextAlign.Center)
+            Text(text = "-", style = TextStyle(fontSize = 30.sp, color = Color.White), modifier = modifier, textAlign = TextAlign.Center)
         }
     }
 }
@@ -113,16 +137,30 @@ fun ButtonRow() {
         Text(text = " ", textAlign = TextAlign.Center)
         TextButton(
             onClick = { /*TODO*/ },
-            modifier = Modifier.background(color = Color.DarkGray).weight(1f)
+            modifier = Modifier
+                .background(color = Color.DarkGray)
+                .weight(1f)
         ) {
-            Text(text="+", modifier = Modifier.background(color = Color.Green).fillMaxWidth())
+            Text(
+                text = "+",
+                modifier = Modifier
+                    .background(color = Color.Green)
+                    .fillMaxWidth()
+            )
         }
         Text(text = " ", textAlign = TextAlign.Center)
         TextButton(
             onClick = { /*TODO*/ },
-            modifier = Modifier.background(color = Color.DarkGray).weight(1f)
+            modifier = Modifier
+                .background(color = Color.DarkGray)
+                .weight(1f)
         ) {
-            Text(text="+", modifier = Modifier.background(color = Color.Green).fillMaxWidth())
+            Text(
+                text = "+",
+                modifier = Modifier
+                    .background(color = Color.Green)
+                    .fillMaxWidth()
+            )
         }
     }
 }
@@ -135,7 +173,7 @@ fun LightPreview() {
     myTimer.start()
 
     MyTheme {
-        TimerScreen(TimerViewModel(myTimer))
+        TimerScreen(TimerViewModel())
     }
 }
 

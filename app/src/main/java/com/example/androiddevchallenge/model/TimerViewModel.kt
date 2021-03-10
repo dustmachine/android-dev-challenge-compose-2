@@ -16,25 +16,20 @@
 package com.example.androiddevchallenge.model
 
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-class TimerViewModel(_myTimer: MyTimer) : ViewModel() {
+class TimerViewModel() : ViewModel() {
+    fun changeHour(diff: Int) { mHours.value = mHours.value?.plus(diff) }
+    fun changeMinute(diff: Int) { mMinutes.value = mMinutes.value?.plus(diff) }
+    fun changeSeconds(diff: Int) { mSeconds.value = mSeconds.value?.plus(diff) }
 
-//    private var _myTimer = MutableLiveData(MyTimer(99, 59, 59))
-//
-//    private val _hours = MutableLiveData(_myTimer.value!!.hours)
-//    val hours: LiveData<Int> = _myTimer.value.hours
-//    private val _minutes = MutableLiveData(_myTimer.value!!.minutes)
-//    val minutes: LiveData<Int> = _myTimer.value.minutes
-//    private val _seconds = MutableLiveData(_myTimer.value!!.seconds)
-//    val seconds: LiveData<Int> = _myTimer.value.seconds
-// //
-
-    var myTimer: MyTimer by mutableStateOf(_myTimer)
-
-//    init {
-//        this._myTimer = MutableLiveData(myTimer)
-//    }
+    val mHours = MutableLiveData(5)
+    var hours: LiveData<Int> = mHours
+    val mMinutes = MutableLiveData(4)
+    var minutes: LiveData<Int> = mMinutes
+    val mSeconds = MutableLiveData(3)
+    var seconds: LiveData<Int> = mSeconds
 }
