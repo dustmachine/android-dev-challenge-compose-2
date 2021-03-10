@@ -18,7 +18,8 @@ I am happy I was able to make the buttons enable/disable while it is running.
 
 ## :camera_flash: Screenshots
 <!-- You can add more screenshots here if you like -->
-<img src="/results/screenshot_1.png" width="260">&emsp;<img src="/results/screenshot_2.png" width="260">&emsp;<img src="/results/video.mp4" width="260">
+<img src="/results/screenshot_1.png" width="260">&emsp;<img src="/results/screenshot_2.png" width="260"> <p/>
+and the <a href="/results/video.mp4">video</a> of the app in action
 
 ## License
 ```
