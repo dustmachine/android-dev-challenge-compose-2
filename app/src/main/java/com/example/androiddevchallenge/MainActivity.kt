@@ -18,20 +18,24 @@ package com.example.androiddevchallenge
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.LiveData
 import com.example.androiddevchallenge.model.MyTimer
 import com.example.androiddevchallenge.model.TimerViewModel
 import com.example.androiddevchallenge.ui.theme.MyTheme
@@ -55,27 +59,71 @@ class MainActivity : AppCompatActivity() {
 // Start building your app here!
 @Composable
 fun TimerScreen(timerViewModel: TimerViewModel) {
-    val hours: String by timerViewModel.myTimer.hours.observeAsState("03")
-    val minutes: String by timerViewModel.myTimer.minutes.observeAsState("04")
-    val seconds: String by timerViewModel.myTimer.seconds.observeAsState("05")
-
     Surface(color = MaterialTheme.colors.background) {
         Column(
             modifier = Modifier.padding(30.dp)
         ) {
-            TimerRow(hours, minutes, seconds)
+            TimerRow(timerViewModel)
+//            ButtonRow()
         }
     }
 }
 
 @Composable
-fun TimerRow(hours: String, minutes: String, seconds: String) {
+fun TimerRow(timerViewModel: TimerViewModel) {
+
     Row(
-        modifier = Modifier.fillMaxWidth(80f)
+        modifier = Modifier.fillMaxWidth(1f)
     ) {
-        Text(text = hours, textAlign = TextAlign.Center, modifier = Modifier.weight(1f))
-        Text(text = minutes, textAlign = TextAlign.Center, modifier = Modifier.weight(1f))
-        Text(text = seconds, textAlign = TextAlign.Center, modifier = Modifier.weight(1f))
+        NumberColumn(timerViewModel, timerViewModel.myTimer.hours, Modifier.weight(1f))
+        NumberColumn(timerViewModel, timerViewModel.myTimer.minutes, Modifier.weight(1f))
+        NumberColumn(timerViewModel, timerViewModel.myTimer.seconds, Modifier.weight(1f))
+    }
+}
+
+@Composable
+fun NumberColumn(timerViewModel: TimerViewModel, digit: LiveData<String>, modifier: Modifier) {
+    val num: String by digit.observeAsState("03")
+    Column(modifier.fillMaxHeight(.5f)) {
+        Text(text = num, textAlign = TextAlign.Center, modifier = modifier.fillMaxWidth(1f).padding(top = 5.dp))
+        TextButton(
+            onClick = { timerViewModel.myTimer._minutes += 1  },
+            modifier = modifier.fillMaxWidth(1f).padding(20.dp).background(color = Color(0xFFaa0077), shape = CircleShape)
+        ) {
+            Text(text="+", style = TextStyle(fontSize = 30.sp, color = Color.White), modifier = modifier, textAlign = TextAlign.Center)
+        }
+        TextButton(
+            onClick = { timerViewModel.myTimer._minutes -= 1 },
+            modifier = modifier.fillMaxWidth(1f).padding(20.dp).background(color = Color(0xFFaa0077), shape = CircleShape)
+        ) {
+            Text(text="-", style = TextStyle(fontSize = 30.sp, color = Color.White),  modifier = modifier, textAlign = TextAlign.Center)
+        }
+    }
+}
+
+@Composable
+fun ButtonRow() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(80f)
+            .padding(
+                vertical = 20.dp
+            )
+    ) {
+        Text(text = " ", textAlign = TextAlign.Center)
+        TextButton(
+            onClick = { /*TODO*/ },
+            modifier = Modifier.background(color = Color.DarkGray).weight(1f)
+        ) {
+            Text(text="+", modifier = Modifier.background(color = Color.Green).fillMaxWidth())
+        }
+        Text(text = " ", textAlign = TextAlign.Center)
+        TextButton(
+            onClick = { /*TODO*/ },
+            modifier = Modifier.background(color = Color.DarkGray).weight(1f)
+        ) {
+            Text(text="+", modifier = Modifier.background(color = Color.Green).fillMaxWidth())
+        }
     }
 }
 

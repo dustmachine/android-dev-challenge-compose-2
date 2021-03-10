@@ -52,6 +52,6 @@ data class MyTimer(var _hours: Int, var _minutes: Int, var _seconds: Int) {
                 Log.i("myTimer", "Finished")
             }
         }
-        timer.start()
+        // timer.start()
     }
 }
