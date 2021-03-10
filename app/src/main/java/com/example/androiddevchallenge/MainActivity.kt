@@ -88,8 +88,7 @@ fun TimerScreen(timerViewModel: TimerViewModel) {
                         color = (if (isClickable) pinkish else grayish),
                         shape = RoundedCornerShape(5.dp)
                     )
-            )
-            {
+            ) {
                 Text(
                     text = "start",
                     style = TextStyle(fontSize = 30.sp, color = Color.White),

@@ -43,7 +43,7 @@ class TimerViewModel() : ViewModel() {
     }
 
     fun start() {
-        if (this.isAlreadyRunning) return;
+        if (this.isAlreadyRunning) return
         val howManyMillis = ((mSeconds.value!! + (mMinutes.value!! * 60) + (mHours.value!! * 60 * 60)) * 1000).toLong()
         val timer = object : CountDownTimer(howManyMillis, 1000) {
             override fun onTick(millisUntilFinished: Long) {
